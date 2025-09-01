@@ -1,146 +1,132 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <title>Tickets Siconet</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="tablesurveysiconet.css">
+  <meta charset="utf-8" />
+  <title>Tickets Siconet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="tablesurveysiconet.css" />
 </head>
 <body>
-    <h1>Tickets Siconet</h1>
+  <h1>Tickets Siconet</h1>
 
-    <p id="last-updated" style="font-weight:bold;"></p>
+  <!-- Fecha de última actualización -->
+  <p id="last-updated" style="font-weight: bold;"></p>
 
-    <!-- Input para filtrar por ID -->
-    <input type="text" id="filterInput" placeholder="Filtrar por ID... (ejemplo: ID-abc123xyz)" />
+  <!-- Input para filtrar por ID -->
+  <input type="text" id="filterInput" placeholder="Filtrar por ID... (ejemplo: ID-abc123xyz)" />
 
-    <!-- Tabla para mostrar tickets -->
-    <table id="ticketsTable" border="1" cellpadding="5" cellspacing="0">
-        <thead>
-            <tr>
-                <th>Empresa</th>
-                <th>Fecha</th>
-                <th>ID</th>
-                <th>Nivel de Urgencia</th>
-                <th>Descripción</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Aquí se insertarán filas dinámicamente -->
-        </tbody>
-    </table>
+  <!-- Tabla para mostrar tickets -->
+  <table id="ticketsTable" border="1" cellpadding="5" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Empresa</th>
+        <th>Fecha</th>
+        <th>ID</th>
+        <th>Nivel de Urgencia</th>
+        <th>Descripción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Filas se insertan dinámicamente -->
+    </tbody>
+  </table>
 
-    <div id="no-results" style="display:none; color: red; font-weight: bold; margin-top: 10px;">No se encontraron tickets que coincidan.</div>
+  <div id="no-results" style="display:none; color: red; font-weight: bold; margin-top: 10px;">
+    No se encontraron tickets que coincidan.
+  </div>
 
-    <!-- PapaParse CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script>
+    const jsonUrl = 'https://script.google.com/macros/s/AKfycbwSRFBW5qa8cCI3t8fKPnrD2GL2tU2Cwwj2l10w29EV2O2EHAhdcKyOhq-o6NkMsBZo/exec';
 
-    <script>
-        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwPOv6OSSi4vdm5JPIwV9WcEldyurM5pxlc7uZBYMDPO0w9GskfCR6I8AblnURWWNs7QnIuNDSBb/pub?output=csv';
+    const tableBody = document.querySelector('#ticketsTable tbody');
+    const filterInput = document.getElementById('filterInput');
+    const noResultsDiv = document.getElementById('no-results');
+    const lastUpdatedP = document.getElementById('last-updated');
 
-        const tableBody = document.querySelector('#ticketsTable tbody');
-        const filterInput = document.getElementById('filterInput');
-        const noResultsDiv = document.getElementById('no-results');
-        const lastUpdatedP = document.getElementById('last-updated');
+    async function loadTickets() {
+      try {
+        const response = await fetch(jsonUrl);
+        if (!response.ok) throw new Error('No se pudo cargar el JSON');
+        const data = await response.json();
 
-        function extraerUrgencia(urgencia) {
-            // Extrae la palabra después del número y punto, ej: "1. Menor" -> "Menor"
-            if (urgencia && urgencia.includes('.')) {
-                return urgencia.split('. ')[1];
-            }
-            return urgencia || '';
+        if (!Array.isArray(data) || data.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="5">No hay tickets registrados.</td></tr>`;
+          return;
         }
 
-        function mostrarFechaActualizacion(rows) {
-            // Tomamos la columna de fecha (índice 1), convertimos a Date y calculamos la max
-            const fechas = rows
-                .map(r => {
-                    const d = new Date(r[1]);
-                    return isNaN(d) ? null : d;
-                })
-                .filter(d => d !== null);
+        window.ticketData = data;
 
-            if (fechas.length === 0) {
-                lastUpdatedP.textContent = '';
-                return;
-            }
+        mostrarFechaActualizacion(data);
+        displayRows(data);
+      } catch (error) {
+        tableBody.innerHTML = `<tr><td colspan="5">Error cargando datos: ${error.message}</td></tr>`;
+      }
+    }
 
-            const maxFecha = new Date(Math.max.apply(null, fechas));
-            const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
-            lastUpdatedP.textContent = `Fecha de última actualización: ${maxFecha.toLocaleDateString('es-ES', opciones)}`;
-        }
+    function mostrarFechaActualizacion(rows) {
+      const fechas = rows.map(row => new Date(row.Fecha)).filter(d => !isNaN(d));
+      if (fechas.length === 0) {
+        lastUpdatedP.textContent = '';
+        return;
+      }
+      const maxFecha = new Date(Math.max(...fechas));
+      const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+      lastUpdatedP.textContent = `Fecha de última actualización: ${maxFecha.toLocaleDateString('es-ES', opciones)}`;
+    }
 
-        function displayRows(rows) {
-            tableBody.innerHTML = '';
-            if (rows.length === 0) {
-                noResultsDiv.style.display = 'block';
-                return;
-            } else {
-                noResultsDiv.style.display = 'none';
-            }
-            for (const row of rows) {
-                // Orden: Empresa(0), Fecha(1), ID(2), Nivel de Urgencia(3), Descripción(4)
-                const empresa = row[0];
-                const fecha = row[1];
-                const id = row[2];
-                const urgencia = extraerUrgencia(row[3]);
-                const descripcion = row[4];
+    function displayRows(rows) {
+      tableBody.innerHTML = '';
+      if (rows.length === 0) {
+        noResultsDiv.style.display = 'block';
+        return;
+      } else {
+        noResultsDiv.style.display = 'none';
+      }
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                        <td>${empresa}</td>
-                        <td>${fecha}</td>
-                        <td>${id}</td>
-                        <td>${urgencia}</td>
-                        <td>${descripcion}</td>
-                    `;
-                tableBody.appendChild(tr);
-            }
-        }
+      for (const item of rows) {
+        const empresa = item.Empresa || '';
+        const fecha = item.Fecha || '';
+        const id = item.ID || '';
+        const urgencia = extraerUrgencia(item["Nivel de Urgencia"]);
+        const descripcion = item.Descripción || '';
 
-        async function loadTickets() {
-            try {
-                const response = await fetch(csvUrl);
-                if (!response.ok) throw new Error('No se pudo cargar el CSV');
-                const csvText = await response.text();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${empresa}</td>
+          <td>${fecha}</td>
+          <td>${id}</td>
+          <td>${urgencia}</td>
+          <td>${descripcion}</td>
+        `;
+        tableBody.appendChild(tr);
+      }
+    }
 
-                // Usar PapaParse para parsear CSV
-                const parsed = Papa.parse(csvText, {
-                    header: false,
-                    skipEmptyLines: true
-                });
+    function extraerUrgencia(urgencia) {
+      if (!urgencia) return '';
+      const partes = urgencia.split('. ');
+      return partes.length > 1 ? partes[1] : urgencia;
+    }
 
-                // parsed.data es un array de arrays
-                const data = parsed.data;
+    filterInput.addEventListener('input', () => {
+      const filterValue = filterInput.value.trim().toLowerCase();
+      if (!window.ticketData) return;
 
-                const headers = data[0];
-                const rows = data.slice(1);
+      if (filterValue === '') {
+        displayRows(window.ticketData);
+      } else {
+        const filtered = window.ticketData.filter(item =>
+          (item.ID || '').toLowerCase().includes(filterValue)
+        );
+        displayRows(filtered);
+      }
+    });
 
-                window.ticketData = rows;
+    // Cargar los tickets al iniciar
+    loadTickets();
 
-                mostrarFechaActualizacion(rows);
-                displayRows(rows);
-            } catch (error) {
-                tableBody.innerHTML = `<tr><td colspan="5">Error cargando datos: ${error.message}</td></tr>`;
-            }
-        }
-
-        filterInput.addEventListener('input', () => {
-            const filterValue = filterInput.value.trim().toLowerCase();
-            if (!window.ticketData) return;
-
-            if (filterValue === '') {
-                displayRows(window.ticketData);
-            } else {
-                const filtered = window.ticketData.filter(row => {
-                    const id = row[2] ? row[2].toLowerCase() : '';
-                    return id.includes(filterValue);
-                });
-                displayRows(filtered);
-            }
-        });
-
-        loadTickets();
-    </script>
+    // 🔁 Opcional: Recargar datos automáticamente cada 60 segundos
+    setInterval(loadTickets, 60000);
+  </script>
 </body>
 </html>
