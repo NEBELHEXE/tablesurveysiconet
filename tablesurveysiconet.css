@@ -1,122 +1,182 @@
-﻿/* Estilos básicos y tabla con colores adaptados */
+:root {
+    /* --- Tipografía base --- */
+    --font-size-base: clamp(0.9rem, 1.5vw, 1rem);
+    --font-size-h1: clamp(1.8rem, 5vw, 4rem);
+    --spacing-base: clamp(1rem, 2vw, 2rem);
+    --border-radius: clamp(0.2rem, 0.5vw, 0.5rem);
+    --shadow-base: 0 0 clamp(0.3rem, 1vw, 0.6rem) rgba(0,0,0,0.3);
+}
+
+/* --- Theme adaptativo --- */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-body: #0000cc;
+        --color-text: #e0e0e0;
+        --bg-header: whitesmoke;
+        --bg-table: #000080cc;
+        --bg-table-alt1: #000055cc;
+        --bg-table-alt2: #000033cc;
+        --bg-hover: #0000ff;
+        --btn-bg: #000099;
+        --btn-bg-hover: #0000cc;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg-body: #f4f4f4;
+        --color-text: #333;
+        --bg-header: #ffffff;
+        --bg-table: #f0f0f0cc;
+        --bg-table-alt1: #e0e0e0cc;
+        --bg-table-alt2: #d0d0d0cc;
+        --bg-hover: #c0c0ff;
+        --btn-bg: #000099;
+        --btn-bg-hover: #0000cc;
+    }
+}
+
+/* --- Base --- */
+* {
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
 body {
-    background-color: #0000cc;
-    color: lightgray;
+    background-color: var(--bg-body);
+    color: var(--color-text);
     font-family: Helvetica, Arial, sans-serif;
-    padding: 2em;
+    font-size: var(--font-size-base);
+    padding: var(--spacing-base);
     text-align: center;
+}
+
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: clamp(3rem, 8vw, 5rem);
+    background-color: var(--bg-header);
+    box-shadow: var(--shadow-base);
+    padding: 0 clamp(1rem, 3vw, 2rem);
+    z-index: 1000;
 }
 
 h1 {
-    font-size: 3rem;
-    margin-bottom: 1em;
+    font-size: var(--font-size-h1);
+    margin-bottom: var(--spacing-base);
 }
 
-input[type="text"] {
-    padding: 10px;
-    width: 300px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #000099;
-    margin-bottom: 20px;
+/* --- Inputs --- */
+input[type="text"], input[type="email"], textarea {
+    padding: clamp(0.5rem, 1vw, 0.8rem);
+    width: clamp(80%, 90vw, 25rem);
+    font-size: var(--font-size-base);
+    border-radius: var(--border-radius);
+    border: 0.1rem solid #000099;
+    margin-bottom: var(--spacing-base);
     text-align: center;
     outline: none;
-    transition: box-shadow 0.3s ease;
+    box-shadow: var(--shadow-base);
+    transition: all 0.3s ease;
 }
 
-    input[type="text"]:focus {
-        box-shadow: 0 0 8px 2px #0000cc;
-        border-color: #0000cc;
-    }
+input[type="text"]:focus, input[type="email"]:focus, textarea:focus {
+    border-color: #0000cc;
+    box-shadow: 0 0 clamp(0.4rem, 1vw, 0.7rem) #0000cc;
+}
 
+/* --- Botón --- */
+#exportPdfBtn, button {
+    padding: clamp(0.5rem, 1vw, 0.8rem) clamp(1rem, 2vw, 1.5rem);
+    font-size: var(--font-size-base);
+    border-radius: var(--border-radius);
+    border: none;
+    background-color: var(--btn-bg);
+    color: white;
+    cursor: pointer;
+    box-shadow: var(--shadow-base);
+    margin-bottom: var(--spacing-base);
+    transition: all 0.3s ease;
+}
+
+#exportPdfBtn:hover, button:hover {
+    background-color: var(--btn-bg-hover);
+    box-shadow: 0 0 clamp(0.4rem, 1vw, 0.8rem) rgba(0,0,0,0.5);
+}
+
+/* --- Tabla --- */
 table {
-    margin: 0 auto;
-    border-collapse: collapse;
     width: 90%;
-    max-width: 1000px;
-    background-color: #000080cc;
-    box-shadow: 0 0 25px 5px #d3d3d340;
-    border-radius: 10px;
+    max-width: clamp(40rem, 90vw, 80rem);
+    margin: 0 auto var(--spacing-base);
+    border-collapse: collapse;
+    border-radius: var(--border-radius);
     overflow: hidden;
+    background-color: var(--bg-table);
+    box-shadow: var(--shadow-base);
+    display: block;
+    overflow-x: auto;
 }
 
 thead tr {
-    background-color: #000066;
+    background-color: var(--bg-table-alt1);
     color: white;
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: clamp(1rem, 2vw, 1.3rem);
 }
 
 thead th {
-    padding: 15px;
-    border-bottom: 2px solid #000099;
+    padding: clamp(0.5rem, 1vw, 0.8rem);
+    border-bottom: 0.1rem solid #000099;
 }
 
 tbody tr {
-    color: lightgray;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
+    font-size: var(--font-size-base);
+    transition: all 0.3s ease;
 }
 
-    tbody tr:nth-child(even) {
-        background-color: #00004dcc;
-    }
+tbody tr:nth-child(even) {
+    background-color: var(--bg-table-alt2);
+}
 
-    tbody tr:nth-child(odd) {
-        background-color: #000099cc;
-    }
+tbody tr:nth-child(odd) {
+    background-color: var(--bg-table-alt1);
+}
 
-    tbody tr:hover {
-        background-color: #0000cc;
-        color: white;
-        cursor: pointer;
-    }
+tbody tr:hover {
+    background-color: var(--bg-hover);
+    color: white;
+    cursor: pointer;
+}
 
 tbody td {
-    padding: 12px 10px;
-    border-right: 1px solid #000080aa;
+    padding: clamp(0.4rem, 1vw, 0.75rem);
+    border-right: 0.1rem solid #000080aa;
 }
 
-    tbody td:last-child {
-        border-right: none;
-    }
-
-.read {
-    background-color: #4caf50cc !important;
-    color: white !important;
-    font-weight: bold;
+tbody td:last-child {
+    border-right: none;
 }
 
-.in-progress {
-    background-color: #ff9800cc !important;
-    color: black !important;
-    font-weight: bold;
-}
+/* --- Estados --- */
+.read { background-color: #4caf50cc !important; color: white !important; font-weight: bold; }
+.in-progress { background-color: #ff9800cc !important; color: black !important; font-weight: bold; }
+.to-read { background-color: #f44336cc !important; color: white !important; font-weight: bold; }
 
-.to-read {
-    background-color: #f44336cc !important;
-    color: white !important;
-    font-weight: bold;
-}
-
-#exportPdfBtn {
-    padding: 10px 20px;
-    margin-bottom: 20px;
-    background-color: #000099;
-    color: white;
-    border: none;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-    #exportPdfBtn:hover {
-        background-color: #0000cc;
-    }
-
+/* --- Última actualización --- */
 #ultimaActualizacion {
-    color: lightgray;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
+    font-size: clamp(0.8rem, 1vw, 1rem);
+    margin-bottom: var(--spacing-base);
+}
+
+/* --- Responsive avanzado --- */
+@media (max-width: 480px) {
+    input[type="text"], textarea, #exportPdfBtn, button {
+        width: 95%;
+    }
 }
