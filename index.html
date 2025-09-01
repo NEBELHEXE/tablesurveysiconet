@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -8,6 +8,8 @@
 </head>
 <body>
     <h1>Tickets Siconet</h1>
+
+    <p id="last-updated" style="font-weight:bold;"></p>
 
     <!-- Input para filtrar por ID -->
     <input type="text" id="filterInput" placeholder="Filtrar por ID... (ejemplo: ID-abc123xyz)" />
@@ -30,33 +32,42 @@
 
     <div id="no-results" style="display:none; color: red; font-weight: bold; margin-top: 10px;">No se encontraron tickets que coincidan.</div>
 
+    <!-- PapaParse CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
     <script>
-        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwPOv6OSSiCi4vdm5JPIwV9WcEldyurM5pxlc7uZBYMDPO0w9GskfCR6I8AblnURWWNs7QnIuNDSBb/pub?output=csv';
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwPOv6OSSi4vdm5JPIwV9WcEldyurM5pxlc7uZBYMDPO0w9GskfCR6I8AblnURWWNs7QnIuNDSBb/pub?output=csv';
 
         const tableBody = document.querySelector('#ticketsTable tbody');
         const filterInput = document.getElementById('filterInput');
         const noResultsDiv = document.getElementById('no-results');
+        const lastUpdatedP = document.getElementById('last-updated');
 
-        function parseCSV(text) {
-            const lines = text.trim().split('\n');
-            return lines.map(line => line.split(','));
+        function extraerUrgencia(urgencia) {
+            // Extrae la palabra después del número y punto, ej: "1. Menor" -> "Menor"
+            if (urgencia && urgencia.includes('.')) {
+                return urgencia.split('. ')[1];
+            }
+            return urgencia || '';
         }
 
-        async function loadTickets() {
-            try {
-                const response = await fetch(csvUrl);
-                const csvText = await response.text();
-                const data = parseCSV(csvText);
+        function mostrarFechaActualizacion(rows) {
+            // Tomamos la columna de fecha (índice 1), convertimos a Date y calculamos la max
+            const fechas = rows
+                .map(r => {
+                    const d = new Date(r[1]);
+                    return isNaN(d) ? null : d;
+                })
+                .filter(d => d !== null);
 
-                const headers = data[0];
-                const rows = data.slice(1);
-
-                tableBody.innerHTML = '';
-                window.ticketData = rows;
-                displayRows(rows);
-            } catch (error) {
-                tableBody.innerHTML = `<tr><td colspan="5">Error cargando datos: ${error.message}</td></tr>`;
+            if (fechas.length === 0) {
+                lastUpdatedP.textContent = '';
+                return;
             }
+
+            const maxFecha = new Date(Math.max.apply(null, fechas));
+            const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+            lastUpdatedP.textContent = `Fecha de última actualización: ${maxFecha.toLocaleDateString('es-ES', opciones)}`;
         }
 
         function displayRows(rows) {
@@ -68,17 +79,49 @@
                 noResultsDiv.style.display = 'none';
             }
             for (const row of rows) {
-                const [empresa, fecha, id, urgencia, descripcion] = row;
+                // Orden: Empresa(0), Fecha(1), ID(2), Nivel de Urgencia(3), Descripción(4)
+                const empresa = row[0];
+                const fecha = row[1];
+                const id = row[2];
+                const urgencia = extraerUrgencia(row[3]);
+                const descripcion = row[4];
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${empresa}</td>
-                    <td>${fecha}</td>
-                    <td>${id}</td>
-                    <td>${urgencia}</td>
-                    <td>${descripcion}</td>
-                `;
+                        <td>${empresa}</td>
+                        <td>${fecha}</td>
+                        <td>${id}</td>
+                        <td>${urgencia}</td>
+                        <td>${descripcion}</td>
+                    `;
                 tableBody.appendChild(tr);
+            }
+        }
+
+        async function loadTickets() {
+            try {
+                const response = await fetch(csvUrl);
+                if (!response.ok) throw new Error('No se pudo cargar el CSV');
+                const csvText = await response.text();
+
+                // Usar PapaParse para parsear CSV
+                const parsed = Papa.parse(csvText, {
+                    header: false,
+                    skipEmptyLines: true
+                });
+
+                // parsed.data es un array de arrays
+                const data = parsed.data;
+
+                const headers = data[0];
+                const rows = data.slice(1);
+
+                window.ticketData = rows;
+
+                mostrarFechaActualizacion(rows);
+                displayRows(rows);
+            } catch (error) {
+                tableBody.innerHTML = `<tr><td colspan="5">Error cargando datos: ${error.message}</td></tr>`;
             }
         }
 
@@ -90,7 +133,7 @@
                 displayRows(window.ticketData);
             } else {
                 const filtered = window.ticketData.filter(row => {
-                    const id = row[2].toLowerCase();
+                    const id = row[2] ? row[2].toLowerCase() : '';
                     return id.includes(filterValue);
                 });
                 displayRows(filtered);
