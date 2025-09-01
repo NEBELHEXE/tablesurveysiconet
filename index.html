@@ -1,141 +1,80 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tickets Siconet</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="tablesurveysiconet.css" />
-</head>
-<body>
-  <h1>Tickets Siconet</h1>
-
-  <!-- Fecha de última actualización -->
-  <p id="last-updated" style="font-weight: bold;"></p>
-
-  <!-- Input para filtrar por ID -->
-  <input type="text" id="filterInput" placeholder="Filtrar por ID... (ejemplo: ID-abc123xyz)" />
-
-  <!-- Tabla para mostrar tickets -->
-  <table id="ticketsTable" border="1" cellpadding="5" cellspacing="0">
-    <thead>
-      <tr>
-        <th>Empresa</th>
-        <th>Fecha</th>
-        <th>ID</th>
-        <th>Nivel de Urgencia</th>
-        <th>Descripción</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Filas se insertan dinámicamente -->
-    </tbody>
-  </table>
-
-  <div id="no-results" style="display:none; color: red; font-weight: bold; margin-top: 10px;">
-    No se encontraron tickets que coincidan.
-  </div>
+  <link rel="stylesheet" href="tableticketsurvey.css"> <!-- tu CSS separado -->
 
   <script>
-    const jsonUrl = 'https://script.google.com/macros/s/AKfycbxAwQsVPhC-xJgiytGNxdKIyBdiqNMH9T8ji8LvIESwKOw-q4qWsNyj2Fg_hPOVM5nT/exec';
+  window.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('loading-overlay');
+    const tableBody = document.querySelector('#tickets-table tbody');
 
-    const tableBody = document.querySelector('#ticketsTable tbody');
-    const filterInput = document.getElementById('filterInput');
-    const noResultsDiv = document.getElementById('no-results');
-    const lastUpdatedP = document.getElementById('last-updated');
+    overlay.style.display = 'flex'; // mostrar overlay
 
-    async function loadTickets() {
-      try {
-        const response = await fetch(jsonUrl);
-        if (!response.ok) throw new Error('No se pudo cargar el JSON');
-        const data = await response.json();
+    fetch('https://script.google.com/macros/s/AKfycbxAwQsVPhC-xJgiytGNxdKIyBdiqNMH9T8ji8LvIESwKOw-q4qWsNyj2Fg_hPOVM5nT/exec') // <--- reemplaza con tu URL de WebApp
+      .then(res => res.json())
+      .then(data => {
+        const hoy = new Date();
+        data.forEach(ticket => {
+          const fechaTicket = new Date(ticket.fecha);
+          const diffDias = Math.floor((hoy - fechaTicket) / (1000 * 60 * 60 * 24));
 
-        if (!Array.isArray(data) || data.length === 0) {
-          tableBody.innerHTML = `<tr><td colspan="5">No hay tickets registrados.</td></tr>`;
-          return;
-        }
+          // Determinar emoji según días
+          let estado = '🫡';
+          if (diffDias >= 0 && diffDias <= 1) estado = '🫡';
+          else if (diffDias <= 3) estado = '😐';
+          else if (diffDias <= 7) estado = '☹️';
+          else estado = '💀';
 
-        window.ticketData = data;
-
-        mostrarFechaActualizacion(data);
-        displayRows(data);
-      } catch (error) {
-        tableBody.innerHTML = `<tr><td colspan="5">Error cargando datos: ${error.message}</td></tr>`;
-      }
-    }
-
-    function mostrarFechaActualizacion(rows) {
-      const fechas = rows.map(row => new Date(row.Fecha)).filter(d => !isNaN(d));
-      if (fechas.length === 0) {
-        lastUpdatedP.textContent = '';
-        return;
-      }
-      const maxFecha = new Date(Math.max(...fechas));
-      const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
-      lastUpdatedP.textContent = `Fecha de última actualización: ${maxFecha.toLocaleDateString('es-ES', opciones)}`;
-    }
-
-    function displayRows(rows) {
-      tableBody.innerHTML = '';
-      if (rows.length === 0) {
-        noResultsDiv.style.display = 'block';
-        return;
-      } else {
-        noResultsDiv.style.display = 'none';
-      }
-
-      for (const item of rows) {
-        const empresa = item.Empresa || '';
-        const fecha = item.Fecha || '';
-        const id = item.ID || '';
-        const urgencia = extraerUrgencia(item["Nivel de Urgencia"]);
-        const descripcion = item.Descripción || '';
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${empresa}</td>
-          <td>${fecha}</td>
-          <td>${id}</td>
-          <td>${urgencia}</td>
-          <td>${descripcion}</td>
-        `;
-        tableBody.appendChild(tr);
-      }
-    }
-
-    function extraerUrgencia(urgencia) {
-      if (!urgencia) return '';
-      const partes = urgencia.split('. ');
-      return partes.length > 1 ? partes[1] : urgencia;
-    }
-
-    filterInput.addEventListener('input', () => {
-      const filterValue = filterInput.value.trim().toLowerCase();
-      if (!window.ticketData) return;
-
-      if (filterValue === '') {
-        displayRows(window.ticketData);
-      } else {
-        const filtered = window.ticketData.filter(item =>
-          (item.ID || '').toLowerCase().includes(filterValue)
-        );
-        displayRows(filtered);
-      }
-    });
-
-    // Cargar los tickets al iniciar
-    loadTickets();
-
-    // 🔁 Opcional: Recargar datos automáticamente cada 60 segundos
-    setInterval(loadTickets, 60000);
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${ticket.empresa}</td>
+            <td>${ticket.fecha}</td>
+            <td>${ticket.id}</td>
+            <td>${ticket.urgencia}</td>
+            <td>${ticket.descripcion}</td>
+            <td>${estado}</td>
+          `;
+          tableBody.appendChild(tr);
+        });
+      })
+      .catch(err => console.error(err))
+      .finally(() => {
+        overlay.style.display = 'none'; // ocultar overlay
+      });
+  });
   </script>
+</head>
+<body>
+  <div class="header">
+    <a href="https://ticketsiconet.netlify.app/">
+      <img src="https://siconet.com.mx/wp-content/uploads/2016/12/transparente_2-01.png" alt="Siconet Logo">
+    </a>
+  </div>
+
+  <main>
+    <!-- Overlay de carga -->
+    <div id="loading-overlay">
+      <div class="spinner"></div>
+      <div>Cargando datos, por favor espera...</div>
+    </div>
+
+    <!-- Tabla de tickets -->
+    <table id="tickets-table">
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th>Fecha</th>
+          <th>ID</th>
+          <th>Urgencia</th>
+          <th>Descripción</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </main>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
