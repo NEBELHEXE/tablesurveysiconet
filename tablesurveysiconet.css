@@ -59,11 +59,18 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: clamp(3rem, 8vw, 5rem);
+    height: clamp(2rem, 5vw, 2.8rem); /* más compacto */
+    padding: 0 clamp(0.5rem, 2vw, 1rem); /* padding reducido */
     background-color: var(--bg-header);
     box-shadow: var(--shadow-base);
-    padding: 0 clamp(1rem, 3vw, 2rem);
     z-index: 1000;
+}
+
+/* Ajuste de la imagen/logo dentro del header */
+.header img {
+    height: clamp(1.5rem, 4vw, 2.5rem); /* altura fluida del logo */
+    width: auto;
+    margin: 0; /* eliminar márgenes extra para que no estire el header */
 }
 
 h1 {
@@ -180,3 +187,4 @@ tbody td:last-child {
         width: 95%;
     }
 }
+
