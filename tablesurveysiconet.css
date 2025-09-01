@@ -1,0 +1,122 @@
+﻿/* Estilos básicos y tabla con colores adaptados */
+body {
+    background-color: #0000cc;
+    color: lightgray;
+    font-family: Helvetica, Arial, sans-serif;
+    padding: 2em;
+    text-align: center;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 1em;
+}
+
+input[type="text"] {
+    padding: 10px;
+    width: 300px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #000099;
+    margin-bottom: 20px;
+    text-align: center;
+    outline: none;
+    transition: box-shadow 0.3s ease;
+}
+
+    input[type="text"]:focus {
+        box-shadow: 0 0 8px 2px #0000cc;
+        border-color: #0000cc;
+    }
+
+table {
+    margin: 0 auto;
+    border-collapse: collapse;
+    width: 90%;
+    max-width: 1000px;
+    background-color: #000080cc;
+    box-shadow: 0 0 25px 5px #d3d3d340;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+thead tr {
+    background-color: #000066;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+thead th {
+    padding: 15px;
+    border-bottom: 2px solid #000099;
+}
+
+tbody tr {
+    color: lightgray;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+    tbody tr:nth-child(even) {
+        background-color: #00004dcc;
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #000099cc;
+    }
+
+    tbody tr:hover {
+        background-color: #0000cc;
+        color: white;
+        cursor: pointer;
+    }
+
+tbody td {
+    padding: 12px 10px;
+    border-right: 1px solid #000080aa;
+}
+
+    tbody td:last-child {
+        border-right: none;
+    }
+
+.read {
+    background-color: #4caf50cc !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.in-progress {
+    background-color: #ff9800cc !important;
+    color: black !important;
+    font-weight: bold;
+}
+
+.to-read {
+    background-color: #f44336cc !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+#exportPdfBtn {
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    background-color: #000099;
+    color: white;
+    border: none;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    #exportPdfBtn:hover {
+        background-color: #0000cc;
+    }
+
+#ultimaActualizacion {
+    color: lightgray;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}

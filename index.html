@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Tickets Siconet</title>
+    <link rel="stylesheet" href="tablesurveysiconet.css" />
+</head>
+
+<body>
+    <h1>Tickets Siconet</h1>
+
+    <!-- Input para filtrar por ID -->
+    <input type="text" id="filtroID" placeholder="Filtrar por ID..." />
+
+    <!-- Botón Exportar PDF (opcional si luego quieres) -->
+    <!-- <button id="exportPdfBtn">Exportar a PDF</button> -->
+    <!-- Última actualización -->
+    <p id="ultimaActualizacion"></p>
+
+    <!-- Tabla para mostrar tickets -->
+    <table id="ticketsTable">
+        <thead>
+            <tr>
+                <th>Empresa</th>
+                <th>Fecha</th>
+                <th>ID</th>
+                <th>Urgencia</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Datos cargados dinámicamente -->
+        </tbody>
+    </table>
+
+    <!-- PapaParse CDN para cargar CSV -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+    <script>
+        const csvURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwPOv6OSSiCi4vdm5JPIwV9WcEldyurM5pxlc7uZBYMDPO0w9GskfCR6I8AblnURWWNs7QnIuNDSBb/pub?output=csv';
+
+        const DIAS_MAXIMOS = 30; // Máximo días para conservar tickets
+
+        let ticketData = [];
+
+        // Filtra tickets por fecha (últimos 30 días)
+        function filtrarPorFecha(data) {
+            const hoy = new Date();
+            return data.filter(ticket => {
+                const fechaTicket = new Date(ticket['Fecha']);
+                if (isNaN(fechaTicket)) return false; // Descarta si fecha no válida
+                const diffTiempo = hoy - fechaTicket;
+                const diffDias = diffTiempo / (1000 * 3600 * 24);
+                return diffDias <= DIAS_MAXIMOS;
+            });
+        }
+
+        // Renderiza la tabla según los datos y filtro de ID
+        function renderTable(data) {
+            const tbody = document.querySelector('#ticketsTable tbody');
+            const filtroID = document.getElementById('filtroID').value.trim().toLowerCase();
+            tbody.innerHTML = '';
+
+            // Filtrar por ID si hay texto
+            const filtrado = filtroID
+                ? data.filter(ticket => ticket['ID'].toLowerCase().includes(filtroID))
+                : data;
+
+            if (filtrado.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="color:#ccc; text-align:center;">No se encontraron tickets</td></tr>';
+                actualizarUltimaActualizacion();
+                return;
+            }
+
+            filtrado.forEach(ticket => {
+                const tr = document.createElement('tr');
+
+                // Clase según urgencia para colores
+                let claseUrgencia = '';
+                const urg = ticket['Nivel de Urgencia'].toLowerCase();
+                if (urg.includes('menor')) claseUrgencia = 'read';
+                else if (urg.includes('medio')) claseUrgencia = 'in-progress';
+                else if (urg.includes('alto')) claseUrgencia = 'to-read';
+
+                tr.className = claseUrgencia;
+
+                tr.innerHTML = `
+              <td>${ticket['Empresa']}</td>
+              <td>${ticket['Fecha']}</td>
+              <td>${ticket['ID']}</td>
+              <td>${ticket['Nivel de Urgencia']}</td>
+              <td>${ticket['Descripción del problema'] || ''}</td>
+            `;
+                tbody.appendChild(tr);
+            });
+
+            actualizarUltimaActualizacion();
+        }
+
+        // Carga CSV y actualiza tabla con filtro por fecha
+        function cargarDatos() {
+            Papa.parse(csvURL, {
+                download: true,
+                header: true,
+                complete: function (results) {
+                    ticketData = filtrarPorFecha(results.data);
+                    renderTable(ticketData);
+                },
+                error: function (err) {
+                    console.error('Error al cargar el CSV:', err);
+                }
+            });
+        }
+
+        // Actualiza texto de última actualización
+        function actualizarUltimaActualizacion() {
+            const ahora = new Date();
+            document.getElementById('ultimaActualizacion').textContent =
+                `Última actualización: ${ahora.toLocaleString()}`;
+        }
+
+        // Evento input para filtrar mientras escribes
+        document.getElementById('filtroID').addEventListener('input', () => {
+            renderTable(ticketData);
+        });
+
+        // Recarga y depura cada 5 minutos (300000 ms)
+        setInterval(cargarDatos, 300000);
+
+        // Carga inicial
+        cargarDatos();
+    </script>
+</body>
+
+</html>
