@@ -28,7 +28,7 @@
     :root {
         --bg-body: #0000cc;
         --color-text: #e0e0e0;
-        --bg-header: whitesmoke;
+        --bg-header: #151515;
         --bg-table: #000080cc;
         --bg-table-alt1: #000055cc;
         --bg-table-alt2: #000033cc;
@@ -196,3 +196,4 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
         width: 95%;
     }
 }
+
