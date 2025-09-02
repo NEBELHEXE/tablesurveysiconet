@@ -197,5 +197,8 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
     }
 }
 
-
-
+/* --- Footer --- */
+.footer {
+  margin-top: var(--spacing-base);
+  font-size: 0.9rem;
+}
