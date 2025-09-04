@@ -1,134 +1,116 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tickets - Siconet</title>
-  <link rel="stylesheet" href="tablesurveysiconet.css">
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      const overlay = document.getElementById('loading-overlay');
-      const tableBody = document.querySelector('#tickets-table tbody');
-
-      overlay.style.display = 'flex'; // mostrar overlay
-
-      fetch('https://script.google.com/macros/s/AKfycbwt6PKRC5WxjF-ZMcZdYx2bWWIRUGb1mr8fehAAB3Y0lQjMobpp0JrukqaChttBxa4w/exec')
-        .then(res => res.json())
-        .then(data => {
-          const hoy = new Date();
-
-          data.forEach(ticket => {
-            // Calcular días desde la fecha
-            const fechaTicket = new Date(ticket.Fecha);
-            const diffDias = Math.floor((hoy - fechaTicket) / (1000 * 60 * 60 * 24));
-
-            // Emoji de estado
-            let estado = '🫡';
-            if (diffDias >= 0 && diffDias <= 1) estado = '🫡';
-            else if (diffDias <= 3) estado = '😐';
-            else if (diffDias <= 7) estado = '☹️';
-            else estado = '💀';
-
-            // Crear fila
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td>${ticket.Empresa}</td>
-              <td>${ticket.Fecha}</td>
-              <td>${ticket.ID}</td>
-              <td>${ticket.Urgencia}</td>
-              <td>${ticket.Descripcion}</td>
-              <td>${estado}</td>
-              <td>
-                <input type="checkbox" ${ticket.Realizado === true ? 'checked' : ''}>
-              </td>
-              <td>
-                <textarea rows="2" placeholder="Escribe un comentario...">${ticket.Comentarios || ""}</textarea>
-              </td>
-            `;
-
-            // Checkbox + guardado de comentarios
-            const checkbox = tr.querySelector('input[type="checkbox"]');
-            const textarea = tr.querySelector('textarea');
-
-            checkbox.addEventListener('change', () => {
-              fetch('https://script.google.com/macros/s/AKfycbwt6PKRC5WxjF-ZMcZdYx2bWWIRUGb1mr8fehAAB3Y0lQjMobpp0JrukqaChttBxa4w/exec', {
-                method: 'POST',
-                body: new URLSearchParams({
-                  action: "update",
-                  id: ticket.ID,
-                  realizado: checkbox.checked,
-                  comentarios: textarea.value
-                })
-              })
-              .then(res => res.json())
-              .then(res => console.log("Actualizado:", res))
-              .catch(err => console.error(err));
-            });
-
-            tableBody.appendChild(tr);
-          });
-        })
-        .catch(err => console.error(err))
-        .finally(() => {
-          overlay.style.display = 'none'; // ocultar overlay
-        });
-    });
-  </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consulta de Tickets</title>
+<link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-  <div class="header">
-    <a target="_blank" href="https://www.siconet.com.mx/">
-      <img src="https://siconet.com.mx/wp-content/uploads/2016/12/transparente_2-01.png" alt="Siconet Logo">
-    </a>
+
+<div class="header">
+  <a target="_blank" href="https://www.siconet.com.mx/">
+    <img src="https://siconet.com.mx/wp-content/uploads/2016/12/transparente_2-01.png" alt="Siconet Logo">
+  </a>
+</div>
+
+<main>
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <div>Cargando datos, por favor espera...</div>
   </div>
 
-  <main>
-    <!-- Overlay de carga -->
-    <div id="loading-overlay">
-      <div class="spinner"></div>
-      <div>Cargando datos, por favor espera...</div>
-    </div>
+  <table id="tickets-table">
+    <thead>
+      <tr>
+        <th>Empresa</th>
+        <th>Fecha</th>
+        <th>ID</th>
+        <th>Urgencia</th>
+        <th>Descripción</th>
+        <th>Comentarios</th>
+        <th>Estado</th>
+        <th>Realizado</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</main>
 
-    <!-- Tabla de tickets -->
-   <table id="tickets-table">
-  <thead>
-    <tr>
-      <th>Empresa</th>
-      <th>Fecha</th>
-      <th>ID</th>
-      <th>Urgencia</th>
-      <th>Descripción</th>
-      <th class="estado-cell">Estado</th>
-      <th>Comentarios</th>
-      <th>Realizado</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Ejemplo S.A.</td>
-      <td>2025-09-04</td>
-      <td>12345</td>
-      <td>Alta</td>
-      <td>Problema con ERP</td>
-      <td class="estado-cell">🫡</td>
-      <td>
-        <textarea class="comment-box" placeholder="Escribe un comentario..."></textarea>
-      </td>
-      <td>
-        <input type="checkbox" class="completed-checkbox">
-      </td>
-    </tr>
-    <!-- Más filas se agregan dinámicamente con JS -->
-  </tbody>
-</table>
+<footer class="footer">
+  <p>© 2025 Tickets - Siconet Sistema Administrativo</p>
+</footer>
 
-  </main>
+<script>
+const SHEET_URL = 'TU_WEBAPP_URL'; // reemplaza con tu WebApp URL
 
-  <footer class="footer">
-    <p>© 2025 Tickets - Siconet Sistema Administrativo</p>
-  </footer>
+window.addEventListener('DOMContentLoaded', () => {
+  const overlay = document.getElementById('loading-overlay');
+  const tableBody = document.querySelector('#tickets-table tbody');
+  overlay.style.display = 'flex';
+
+  fetch(SHEET_URL)
+    .then(res => res.json())
+    .then(data => {
+      const hoy = new Date();
+
+      data.forEach(ticket => {
+        const fechaTicket = new Date(ticket.Fecha || ticket.fecha);
+        const diffDias = Math.floor((hoy - fechaTicket)/(1000*60*60*24));
+        let estadoEmoji = '🫡';
+        if(diffDias>1 && diffDias<=3) estadoEmoji='😐';
+        else if(diffDias>3 && diffDias<=7) estadoEmoji='☹️';
+        else if(diffDias>7) estadoEmoji='💀';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${ticket.Empresa || ''}</td>
+          <td>${fechaTicket.toLocaleDateString()}</td>
+          <td>${ticket.ID || ticket.id || ''}</td>
+          <td>${ticket.Urgencia || ticket.urgencia || ''}</td>
+          <td>${ticket.Descripcion || ticket.descripcion || ''}</td>
+          <td>
+            <textarea class="comment-box" data-id="${ticket.ID || ticket.id || ''}">${ticket.Comentarios || ''}</textarea>
+          </td>
+          <td>${estadoEmoji}</td>
+          <td>
+            <input type="checkbox" class="completed-checkbox" data-id="${ticket.ID || ticket.id || ''}" ${ticket.Realizado==="TRUE" ? "checked":""}>
+          </td>
+        `;
+        tableBody.appendChild(tr);
+      });
+
+      // autoajustar textarea
+      document.querySelectorAll('textarea.comment-box').forEach(t=>{
+        t.style.height='auto';
+        t.style.height=t.scrollHeight+'px';
+      });
+
+      tableBody.addEventListener('input', e=>{
+        if(e.target.classList.contains('comment-box')){
+          e.target.style.height='auto';
+          e.target.style.height=e.target.scrollHeight+'px';
+        }
+      });
+
+      // enviar checkbox al WebApp
+      tableBody.addEventListener('change', e=>{
+        if(e.target.classList.contains('completed-checkbox')){
+          const id = e.target.dataset.id;
+          const realizado = e.target.checked;
+          const comment = e.target.closest('tr').querySelector('textarea.comment-box').value;
+
+          fetch(SHEET_URL, {
+            method:'POST',
+            headers: {'Content-Type':'application/x-www-form-urlencoded'},
+            body:`id=${id}&realizado=${realizado}&comentarios=${encodeURIComponent(comment)}`
+          }).catch(err=>console.error(err));
+        }
+      });
+    })
+    .catch(err=>console.error(err))
+    .finally(()=>overlay.style.display='none');
+});
+</script>
 </body>
 </html>
-
-
-
