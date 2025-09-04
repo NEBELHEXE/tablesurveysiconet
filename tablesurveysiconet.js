@@ -28,20 +28,20 @@ document.addEventListener("DOMContentLoaded", () => {
             <input type="checkbox" class="completed-checkbox" ${ticket.Realizado ? "checked" : ""}>
           </td>
           <td>
+            <div class="descripcion-ticket" style="margin-bottom:5px; font-weight:500;">${ticket.Descripcion}</div>
             <textarea class="comment-box" placeholder="Anotaciones...">${ticket.Anotaciones || ""}</textarea>
             <div class="sending-feedback">Enviando Anotaciones...</div>
           </td>
         `;
         tableBody.appendChild(tr);
 
-        // Referencias a los elementos
         const checkbox = tr.querySelector(".completed-checkbox");
         const textarea = tr.querySelector(".comment-box");
         const feedback = tr.querySelector(".sending-feedback");
 
         // Función para enviar actualización a la Web App
         const guardarCambios = () => {
-          feedback.style.opacity = 1; // mostrar feedback
+          feedback.classList.add("show"); // Mostrar feedback
           fetch("https://script.google.com/macros/s/AKfycbyV9t1_pxV0AMLyiulpNdUxUhTDPLSK5zbGfMZf5RtByIfVXEWYhVy9rR5zHum2Zz7N/exec", {
             method: "POST",
             body: new URLSearchParams({
@@ -51,24 +51,25 @@ document.addEventListener("DOMContentLoaded", () => {
               anotaciones: textarea.value
             })
           })
+          .then(res => res.json())
           .then(() => {
             setTimeout(() => {
-              feedback.style.opacity = 0; // ocultar después de 1s
+              feedback.classList.remove("show"); // Ocultar feedback después de 1s
             }, 1000);
           })
           .catch(err => {
             console.error("Error guardando ticket:", err);
-            feedback.textContent = "Error al enviar!";
+            feedback.classList.remove("show");
           });
         };
 
         // Guardar al marcar checkbox
         checkbox.addEventListener("change", guardarCambios);
 
-        // Guardar al salir del textarea
+        // Guardar al salir del textarea (blur)
         textarea.addEventListener("blur", guardarCambios);
 
-        // Guardar automáticamente al escribir (debounce)
+        // Guardar automáticamente al escribir en textarea (debounce)
         let timeout;
         textarea.addEventListener("input", () => {
           clearTimeout(timeout);
