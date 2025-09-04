@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Función para enviar actualización a la Web App
         const guardarCambios = () => {
-          fetch("https://script.google.com/macros/s/TU_WEB_APP_ID/exec", {
+          fetch("https://script.google.com/macros/s/AKfycbweQJOx0bh5whh0dJmjBoHyO8FDSPQfO-6q_a-S7soh85pT9o5_oMuZ7kLJb7faqYsx/exec", {
             method: "POST",
             body: new URLSearchParams({
               action: "update",
