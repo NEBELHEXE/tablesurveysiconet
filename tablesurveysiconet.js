@@ -28,9 +28,12 @@ document.addEventListener("DOMContentLoaded", () => {
             <input type="checkbox" class="completed-checkbox" ${ticket.Realizado ? "checked" : ""}>
           </td>
           <td>
-            <div class="descripcion-ticket" style="margin-bottom:5px; font-weight:500;">${ticket.Descripcion}</div>
-            <textarea class="comment-box" placeholder="Anotaciones...">${ticket.Anotaciones || ""}</textarea>
-            <div class="sending-feedback">Enviando Anotaciones...</div>
+            <div class="descripcion-ticket" style="margin-bottom:5px; font-weight:500;">
+  <!-- Aquí aparecerá la descripción del ticket -->
+</div>
+<textarea class="comment-box" placeholder="Anotaciones..."></textarea>
+<div class="sending-feedback">Enviando Anotaciones...</div>
+
           </td>
         `;
         tableBody.appendChild(tr);
