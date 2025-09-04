@@ -15,6 +15,7 @@
     --bg-body: #f4f4f4;
     --color-text: #333;
     --bg-header: #ffffff;
+    --bg-table: #f0f0f0cc;
     --bg-table-alt1: #e0e0e0cc;
     --bg-table-alt2: #d0d0d0cc;
     --bg-hover: #c0c0ff;
@@ -28,6 +29,7 @@
         --bg-body: #0000cc;
         --color-text: #e0e0e0;
         --bg-header: rgb(0, 0, 109);
+        --bg-table: #000080cc;
         --bg-table-alt1: #000055cc;
         --bg-table-alt2: #000033cc;
         --bg-hover: #0000ff;
@@ -48,7 +50,7 @@ body {
 
 main {
     margin: 0 auto;
-    max-width: 900px;
+    max-width: 1200px;
     padding: var(--spacing-base);
 }
 
@@ -80,40 +82,64 @@ h1 {
     margin-bottom: var(--spacing-base);
 }
 
-/* --- Inputs y textarea --- */
-input[type="text"], input[type="email"], textarea, select {
-    padding: clamp(0.5rem, 1vw, 0.8rem);
-    width: clamp(80%, 90vw, 25rem);
-    font-size: var(--font-size-base);
+/* --- Tabla --- */
+#tickets-table {
+    width: 80%;
+    margin: 2rem auto;
+    border-collapse: collapse;
     border-radius: var(--border-radius);
-    border: 0.1rem solid #000099;
-    margin-bottom: var(--spacing-base);
-    text-align: center;
-    outline: none;
+    overflow: hidden;
     box-shadow: var(--shadow-base);
 }
 
-input:focus, textarea:focus, select:focus {
+#tickets-table th, #tickets-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 0.1rem solid rgba(0,0,0,0.1);
+}
+
+#tickets-table thead {
+    background-color: var(--bg-table-alt1);
+    color: var(--color-text);
+}
+
+#tickets-table tbody tr:nth-child(odd) {
+    background-color: var(--bg-table-alt1);
+}
+
+#tickets-table tbody tr:nth-child(even) {
+    background-color: var(--bg-table-alt2);
+}
+
+#tickets-table tbody tr:hover {
+    background-color: var(--bg-hover);
+    color: white;
+    cursor: pointer;
+}
+
+/* --- Inputs y textarea --- */
+.comment-box {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.5rem;
+    font-size: var(--font-size-base);
+    border-radius: var(--border-radius);
+    border: 0.1rem solid #000099;
+    resize: vertical;
+    box-shadow: var(--shadow-base);
+}
+
+.comment-box:focus {
     border-color: #0000cc;
     box-shadow: 0 0 clamp(0.4rem, 1vw, 0.7rem) #0000cc;
 }
 
-/* --- Botones --- */
-button, input[type="submit"], #exportPdfBtn {
-    padding: clamp(0.5rem, 1vw, 0.8rem) clamp(1rem, 2vw, 1.5rem);
-    font-size: var(--font-size-base);
-    border-radius: var(--border-radius);
-    border: none;
-    background-color: var(--btn-bg);
-    color: white;
+.completed-checkbox {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin: 0 auto;
+    display: block;
     cursor: pointer;
-    box-shadow: var(--shadow-base);
-    margin-bottom: var(--spacing-base);
-}
-
-button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
-    background-color: var(--btn-bg-hover);
-    box-shadow: 0 0 clamp(0.4rem, 1vw, 0.8rem) rgba(0,0,0,0.5);
 }
 
 /* --- Overlay de carga --- */
@@ -147,84 +173,20 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
     100% { transform: rotate(360deg); }
 }
 
-/* --- Tabla --- */
-#tickets-table {
-    width: 95%;
-    max-width: 900px;
-    margin: 3rem auto 2rem auto;
-    border-collapse: collapse;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: var(--shadow-base);
+/* --- Footer --- */
+.footer {
+  margin-top: var(--spacing-base);
+  font-size: 0.9rem;
 }
 
-#tickets-table th, #tickets-table td {
-    padding: 0.6rem 0.8rem;
-    text-align: left;
-    border-bottom: 0.1rem solid rgba(0,0,0,0.1);
-}
-
-#tickets-table thead {
-    background-color: var(--bg-table-alt1);
-    color: var(--color-text);
-}
-
-/* Alternancia de filas y hover */
-#tickets-table tbody tr:nth-child(odd) { background-color: var(--bg-table-alt1); }
-#tickets-table tbody tr:nth-child(even) { background-color: var(--bg-table-alt2); }
-#tickets-table tbody tr:hover { background-color: var(--bg-hover); color: white; }
-
-/* --- Columnas específicas --- */
-#tickets-table td textarea { 
-    width: 100%; 
-    min-height: 3rem; 
-    padding: 0.5rem; 
-    font-size: var(--font-size-base); 
-    border-radius: var(--border-radius); 
-    border: 0.1rem solid #000099; 
-    resize: vertical; 
-    box-shadow: var(--shadow-base);
-}
-
-#tickets-table td input[type="checkbox"] { 
-    display: block; 
-    margin: 0 auto; 
-    width: 1.2rem; 
-    height: 1.2rem; 
-    cursor: pointer; 
-}
-
-/* Columnas de Estado y Realizado más pequeñas */
-#tickets-table td:nth-child(7),
-#tickets-table td:nth-child(8) {
-    text-align: center;
-    width: 5%;
-    padding: 0.5rem;
-}
-
-/* Comentarios más grandes */
-#tickets-table td:nth-child(6) textarea {
-    width: 100%;
-    min-width: 180px;
-    max-width: 100%;
-    height: auto;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
+/* --- Responsive --- */
+@media (max-width: 800px) {
     #tickets-table th, #tickets-table td {
         font-size: 0.9rem;
-        padding: 0.4rem;
+        padding: 0.5rem;
     }
 
     input[type="text"], textarea, select, button, #exportPdfBtn {
         width: 95%;
     }
-}
-
-/* Footer */
-.footer {
-    margin-top: var(--spacing-base);
-    font-size: 0.9rem;
-    text-align: center;
 }
