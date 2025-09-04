@@ -30,15 +30,18 @@
           else estado = '💀';
 
           const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${ticket.Empresa}</td>
-            <td>${ticket.Fecha}</td>
-            <td>${ticket.ID}</td>
-            <td>${ticket.Urgencia}</td>
-            <td>${ticket.Descripcion}</td>
-            <td>${estado}</td>
-          `;
-          tableBody.appendChild(tr);
+
+  tr.innerHTML = `
+  <td>${ticket.Empresa}</td>
+  <td>${ticket.Fecha}</td>
+  <td>${ticket.ID}</td>
+  <td>${ticket.Urgencia}</td>
+  <td>${ticket.Descripcion}</td>
+  <td>${estado}</td>
+  <td><textarea placeholder="Escribe un comentario..." rows="2"></textarea></td>
+  <td><input type="checkbox"></td>
+`;
+tableBody.appendChild(tr);
         });
       })
       .catch(err => console.error(err))
@@ -62,20 +65,23 @@
       <div>Cargando datos, por favor espera...</div>
     </div>
 
-    <!-- Tabla de tickets -->
-    <table id="tickets-table">
-      <thead>
-        <tr>
-          <th>Empresa</th>
-          <th>Fecha</th>
-          <th>ID</th>
-          <th>Urgencia</th>
-          <th>Descripción</th>
-          <th>Estado</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+   <!-- Tabla de tickets -->
+<table id="tickets-table">
+  <thead>
+    <tr>
+      <th>Empresa</th>
+      <th>Fecha</th>
+      <th>ID</th>
+      <th>Urgencia</th>
+      <th>Descripción</th>
+      <th>Estado</th>
+      <th>Comentarios</th>
+      <th>Realizado</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+    
   </main>
 </body>
 
@@ -83,6 +89,7 @@
     <p>© 2025 Tickets - Siconet Sistema Administrativo</p>
 </footer>
 </html>
+
 
 
 
