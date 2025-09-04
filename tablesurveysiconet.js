@@ -1,64 +1,62 @@
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbweQJOx0bh5whh0dJmjBoHyO8FDSPQfO-6q_a-S7soh85pT9o5_oMuZ7kLJb7faqYsx/exec"; // Reemplaza con tu URL de Web App
+window.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('loading-overlay');
+    const tableBody = document.querySelector('#tickets-table tbody');
 
-document.addEventListener("DOMContentLoaded", () => {
-  const tableBody = document.querySelector("#tickets-table tbody");
-  const overlay = document.getElementById("loading-overlay");
+    overlay.style.display = 'flex'; // mostrar overlay
 
-  overlay.style.display = "flex";
+    fetch('https://script.google.com/macros/s/AKfycbweQJOx0bh5whh0dJmjBoHyO8FDSPQfO-6q_a-S7soh85pT9o5_oMuZ7kLJb7faqYsx/exec') // reemplaza con tu URL
+        .then(res => res.json())
+        .then(data => {
+            const hoy = new Date();
 
-  fetch(SHEET_URL)
-    .then(res => res.json())
-    .then(data => {
-      tableBody.innerHTML = ""; // Limpiar tabla antes de llenarla
+            data.forEach(ticket => {
+                // Calcular días transcurridos
+                const fechaTicket = new Date(ticket.Fecha);
+                const diffDias = Math.floor((hoy - fechaTicket) / (1000 * 60 * 60 * 24));
 
-      data.forEach(ticket => {
-        const tr = document.createElement("tr");
+                // Asignar emoji según días
+                let estado = '🫡';
+                if (diffDias <= 1) estado = '🫡';
+                else if (diffDias <= 3) estado = '😐';
+                else if (diffDias <= 7) estado = '☹️';
+                else estado = '💀';
 
-        tr.innerHTML = `
-          <td>${ticket.Empresa}</td>
-          <td>${ticket.Fecha}</td>
-          <td>${ticket.ID}</td>
-          <td>${ticket.Urgencia}</td>
-          <td>${ticket.Descripcion}</td>
-          <td>${ticket.Estado || ""}</td>
-          <td><input type="checkbox" class="completed-checkbox" ${ticket.Realizado === true ? "checked" : ""}></td>
-          <td><textarea class="comment-box">${ticket.Anotaciones || ""}</textarea></td>
-        `;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${ticket.Empresa}</td>
+                    <td>${ticket.Fecha}</td>
+                    <td>${ticket.ID}</td>
+                    <td>${ticket.Urgencia}</td>
+                    <td><textarea class="comment-box">${ticket.Anotaciones || ""}</textarea></td>
+                    <td><input type="checkbox" class="completed-checkbox" ${ticket.Realizado ? "checked" : ""}></td>
+                    <td>${estado}</td>
+                `;
+                tableBody.appendChild(tr);
 
-        // Checkbox: guardar al marcar/desmarcar
-        const checkbox = tr.querySelector(".completed-checkbox");
-        checkbox.addEventListener("change", () => {
-          updateTicket(ticket.ID, checkbox.checked, tr.querySelector(".comment-box").value);
-        });
+                // Guardar cambios al marcar checkbox
+                const checkbox = tr.querySelector('.completed-checkbox');
+                const textarea = tr.querySelector('.comment-box');
 
-        // Textarea: guardar al perder foco
-        const textarea = tr.querySelector(".comment-box");
-        textarea.addEventListener("blur", () => {
-          updateTicket(ticket.ID, tr.querySelector(".completed-checkbox").checked, textarea.value);
-        });
+                checkbox.addEventListener('change', () => {
+                    const payload = new URLSearchParams();
+                    payload.append('action', 'update');
+                    payload.append('id', ticket.ID);
+                    payload.append('realizado', checkbox.checked);
+                    payload.append('comentarios', textarea.value);
 
-        tableBody.appendChild(tr);
-      });
-    })
-    .catch(err => console.error(err))
-    .finally(() => overlay.style.display = "none");
+                    fetch('TU_WEBAPP_URL', { 
+                        method: 'POST',
+                        body: payload
+                    })
+                    .then(res => res.json())
+                    .then(resp => console.log(resp))
+                    .catch(err => console.error(err));
+                });
+
+                // También puedes guardar cambios de textarea en otro evento si quieres
+                // textarea.addEventListener('change', () => { ... });
+            });
+        })
+        .catch(err => console.error(err))
+        .finally(() => overlay.style.display = 'none');
 });
-
-// Función para actualizar ticket
-function updateTicket(id, realizado, anotaciones) {
-  fetch(SHEET_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      action: "update",
-      id,
-      realizado,
-      comentarios: anotaciones
-    })
-  })
-    .then(res => res.json())
-    .then(resp => {
-      if(resp.status !== "ok") console.error(resp.message);
-    })
-    .catch(err => console.error(err));
-}
