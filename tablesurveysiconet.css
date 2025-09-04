@@ -150,7 +150,8 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
 
 /* --- Tabla --- */
 #tickets-table {
-    width: 80%;
+    width: 80%; /* ocupa el 80% del ancho de pantalla */
+    max-width: 1200px; /* ancho máximo opcional */
     margin: 2rem auto;
     border-collapse: collapse;
     border-radius: var(--border-radius);
@@ -206,6 +207,17 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
     resize: vertical;
 }
 
+#tickets-table td textarea.comment-box {
+    width: 100%;
+    min-height: 3rem; /* más grande visualmente */
+    resize: vertical;
+    font-size: var(--font-size-base);
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    border: 0.1rem solid #000099;
+    box-sizing: border-box;
+}
+
 /* --- Checkbox columna Realizado --- */
 #tickets-table td input[type="checkbox"] {
     display: block;
@@ -230,3 +242,4 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
     margin-top: var(--spacing-base);
     font-size: 0.9rem;
 }
+
