@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   overlay.style.display = "flex";
 
-  fetch("https://script.google.com/macros/s/AKfycbyV9t1_pxV0AMLyiulpNdUxUhTDPLSK5zbGfMZf5RtByIfVXEWYhVy9rR5zHum2Zz7N/exec")
+  fetch("https://script.google.com/macros/s/AKfycbwcGMthk-uqMPg_DttrEae8LBSxgZbHCp_zgAFO6nXTJSwCfPJ4z1M2GzA66dUWyno8/exec")
     .then(res => res.json())
     .then(tickets => {
       tickets.forEach(ticket => {
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </td>
           <td>
             <textarea class="comment-box" placeholder="Anotaciones...">${ticket.Anotaciones || ""}</textarea>
-            <div class="sending-feedback" style="display:none; font-size:0.85rem; color:#555; margin-top:3px;">Enviando Anotaciones...</div>
+            <div class="sending-feedback">Enviando Anotaciones...</div>
           </td>
         `;
         tableBody.appendChild(tr);
@@ -41,8 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Función para enviar actualización a la Web App
         const guardarCambios = () => {
-          feedback.style.display = "block"; // Mostrar animación/feedback
-          fetch("https://script.google.com/macros/s/AKfycbyV9t1_pxV0AMLyiulpNdUxUhTDPLSK5zbGfMZf5RtByIfVXEWYhVy9rR5zHum2Zz7N/exec", {
+          feedback.style.opacity = 1; // mostrar feedback
+          fetch("https://script.google.com/macros/s/AKfycbwcGMthk-uqMPg_DttrEae8LBSxgZbHCp_zgAFO6nXTJSwCfPJ4z1M2GzA66dUWyno8/exec", {
             method: "POST",
             body: new URLSearchParams({
               action: "update",
@@ -51,29 +51,28 @@ document.addEventListener("DOMContentLoaded", () => {
               anotaciones: textarea.value
             })
           })
-          .then(res => res.json())
           .then(() => {
             setTimeout(() => {
-              feedback.style.display = "none"; // Ocultar feedback después de 1s
+              feedback.style.opacity = 0; // ocultar después de 1s
             }, 1000);
           })
           .catch(err => {
             console.error("Error guardando ticket:", err);
-            feedback.style.display = "none";
+            feedback.textContent = "Error al enviar!";
           });
         };
 
         // Guardar al marcar checkbox
         checkbox.addEventListener("change", guardarCambios);
 
-        // Guardar al salir del textarea (blur)
+        // Guardar al salir del textarea
         textarea.addEventListener("blur", guardarCambios);
 
-        // Guardar automáticamente al escribir en textarea (debounce)
+        // Guardar automáticamente al escribir (debounce)
         let timeout;
         textarea.addEventListener("input", () => {
           clearTimeout(timeout);
-          timeout = setTimeout(guardarCambios, 500); // espera 0.5s después de dejar de escribir
+          timeout = setTimeout(guardarCambios, 500);
         });
       });
     })
