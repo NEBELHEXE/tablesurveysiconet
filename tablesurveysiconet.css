@@ -202,3 +202,60 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
   margin-top: var(--spacing-base);
   font-size: 0.9rem;
 }
+
+/* --- Inputs de comentarios y checkbox --- */
+.comment-box {
+    width: 95%;
+    max-width: 25rem;
+    padding: clamp(0.5rem, 1vw, 0.8rem);
+    font-size: var(--font-size-base);
+    border-radius: var(--border-radius);
+    border: 0.1rem solid #000099;
+    margin-top: 0.5rem;
+    margin-bottom: var(--spacing-base);
+    resize: vertical;
+    box-shadow: var(--shadow-base);
+}
+
+.comment-box:focus {
+    border-color: #0000cc;
+    box-shadow: 0 0 clamp(0.4rem, 1vw, 0.7rem) #0000cc;
+}
+
+/* Checkbox estilo */
+.completed-checkbox {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-left: 0.5rem;
+    cursor: pointer;
+}
+
+/* Estilo de celdas de tabla para comentarios y checkbox */
+#tickets-table td textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.4rem;
+    font-size: var(--font-size-base);
+    border-radius: var(--border-radius);
+    border: 0.1rem solid #000099;
+    resize: vertical;
+}
+
+#tickets-table td input[type="checkbox"] {
+    display: block;
+    margin: 0 auto;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+/* Mantener hover y alternancia de filas */
+#tickets-table tbody tr:hover {
+    background-color: var(--bg-hover);
+    color: white;
+}
+#tickets-table tbody tr:nth-child(odd) {
+    background-color: var(--bg-table-alt1);
+}
+#tickets-table tbody tr:nth-child(even) {
+    background-color: var(--bg-table-alt2);
+}
