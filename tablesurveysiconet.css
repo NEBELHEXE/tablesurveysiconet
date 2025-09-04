@@ -15,7 +15,6 @@
     --bg-body: #f4f4f4;
     --color-text: #333;
     --bg-header: #ffffff;
-    --bg-table: #f0f0f0cc;
     --bg-table-alt1: #e0e0e0cc;
     --bg-table-alt2: #d0d0d0cc;
     --bg-hover: #c0c0ff;
@@ -29,7 +28,6 @@
         --bg-body: #0000cc;
         --color-text: #e0e0e0;
         --bg-header: rgb(0, 0, 109);
-        --bg-table: #000080cc;
         --bg-table-alt1: #000055cc;
         --bg-table-alt2: #000033cc;
         --bg-hover: #0000ff;
@@ -151,9 +149,9 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
 
 /* --- Tabla --- */
 #tickets-table {
-    width: 90%;
+    width: 95%;
     max-width: 900px;
-    margin: 2rem auto;
+    margin: 3rem auto 2rem auto;
     border-collapse: collapse;
     border-radius: var(--border-radius);
     overflow: hidden;
@@ -161,7 +159,7 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
 }
 
 #tickets-table th, #tickets-table td {
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.8rem;
     text-align: left;
     border-bottom: 0.1rem solid rgba(0,0,0,0.1);
 }
@@ -171,25 +169,52 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
     color: var(--color-text);
 }
 
-#tickets-table tbody tr:nth-child(odd) {
-    background-color: var(--bg-table-alt1);
+/* Alternancia de filas y hover */
+#tickets-table tbody tr:nth-child(odd) { background-color: var(--bg-table-alt1); }
+#tickets-table tbody tr:nth-child(even) { background-color: var(--bg-table-alt2); }
+#tickets-table tbody tr:hover { background-color: var(--bg-hover); color: white; }
+
+/* --- Columnas específicas --- */
+#tickets-table td textarea { 
+    width: 100%; 
+    min-height: 3rem; 
+    padding: 0.5rem; 
+    font-size: var(--font-size-base); 
+    border-radius: var(--border-radius); 
+    border: 0.1rem solid #000099; 
+    resize: vertical; 
+    box-shadow: var(--shadow-base);
 }
 
-#tickets-table tbody tr:nth-child(even) {
-    background-color: var(--bg-table-alt2);
+#tickets-table td input[type="checkbox"] { 
+    display: block; 
+    margin: 0 auto; 
+    width: 1.2rem; 
+    height: 1.2rem; 
+    cursor: pointer; 
 }
 
-#tickets-table tbody tr:hover {
-    background-color: var(--bg-hover);
-    color: white;
-    cursor: pointer;
+/* Columnas de Estado y Realizado más pequeñas */
+#tickets-table td:nth-child(7),
+#tickets-table td:nth-child(8) {
+    text-align: center;
+    width: 5%;
+    padding: 0.5rem;
 }
 
-/* --- Responsive --- */
+/* Comentarios más grandes */
+#tickets-table td:nth-child(6) textarea {
+    width: 100%;
+    min-width: 180px;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Responsive */
 @media (max-width: 600px) {
     #tickets-table th, #tickets-table td {
         font-size: 0.9rem;
-        padding: 0.5rem;
+        padding: 0.4rem;
     }
 
     input[type="text"], textarea, select, button, #exportPdfBtn {
@@ -197,65 +222,9 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
     }
 }
 
-/* --- Footer --- */
+/* Footer */
 .footer {
-  margin-top: var(--spacing-base);
-  font-size: 0.9rem;
-}
-
-/* --- Inputs de comentarios y checkbox --- */
-.comment-box {
-    width: 95%;
-    max-width: 25rem;
-    padding: clamp(0.5rem, 1vw, 0.8rem);
-    font-size: var(--font-size-base);
-    border-radius: var(--border-radius);
-    border: 0.1rem solid #000099;
-    margin-top: 0.5rem;
-    margin-bottom: var(--spacing-base);
-    resize: vertical;
-    box-shadow: var(--shadow-base);
-}
-
-.comment-box:focus {
-    border-color: #0000cc;
-    box-shadow: 0 0 clamp(0.4rem, 1vw, 0.7rem) #0000cc;
-}
-
-/* Checkbox estilo */
-.completed-checkbox {
-    width: 1.2rem;
-    height: 1.2rem;
-    margin-left: 0.5rem;
-    cursor: pointer;
-}
-
-/* Estilo de celdas de tabla para comentarios y checkbox */
-#tickets-table td textarea {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0.4rem;
-    font-size: var(--font-size-base);
-    border-radius: var(--border-radius);
-    border: 0.1rem solid #000099;
-    resize: vertical;
-}
-
-#tickets-table td input[type="checkbox"] {
-    display: block;
-    margin: 0 auto;
-    transform: scale(1.2);
-    cursor: pointer;
-}
-
-/* Mantener hover y alternancia de filas */
-#tickets-table tbody tr:hover {
-    background-color: var(--bg-hover);
-    color: white;
-}
-#tickets-table tbody tr:nth-child(odd) {
-    background-color: var(--bg-table-alt1);
-}
-#tickets-table tbody tr:nth-child(even) {
-    background-color: var(--bg-table-alt2);
+    margin-top: var(--spacing-base);
+    font-size: 0.9rem;
+    text-align: center;
 }
