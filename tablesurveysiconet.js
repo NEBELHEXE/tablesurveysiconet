@@ -28,8 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <input type="checkbox" class="completed-checkbox" ${ticket.Realizado ? "checked" : ""}>
           </td>
           <td>
-            <textarea class="comment-box" placeholder="Anotaciones..."></textarea>
-            <div class="sending-feedback" style="display:none; font-size:0.85rem; color:#555; margin-top:3px;">Enviando Anotaciones...</div>
+            <textarea class="comment-box" placeholder="Anotaciones...">${ticket.Anotaciones || ""}</textarea>
+            <div class="sending-feedback">Enviando Anotaciones...</div>
           </td>
         `;
         tableBody.appendChild(tr);
@@ -38,10 +38,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const textarea = tr.querySelector(".comment-box");
         const feedback = tr.querySelector(".sending-feedback");
 
-        // Función para enviar actualización a la Web App
+        // Función para enviar actualización
         const guardarCambios = () => {
           if (!textarea.value.trim()) return; // No enviar si está vacío
-          feedback.style.display = "block";
+
+          feedback.classList.add("show"); // Mostrar animación
+
           fetch("https://script.google.com/macros/s/AKfycbyV9t1_pxV0AMLyiulpNdUxUhTDPLSK5zbGfMZf5RtByIfVXEWYhVy9rR5zHum2Zz7N/exec", {
             method: "POST",
             body: new URLSearchParams({
@@ -54,21 +56,21 @@ document.addEventListener("DOMContentLoaded", () => {
           .then(res => res.json())
           .then(() => {
             setTimeout(() => {
-              feedback.style.display = "none";
+              feedback.classList.remove("show"); // Ocultar animación
               textarea.value = ""; // Vaciar textarea
             }, 1000);
           })
           .catch(err => {
             console.error("Error guardando ticket:", err);
-            feedback.style.display = "none";
+            feedback.classList.remove("show");
           });
         };
 
-        // Guardar solo al salir del textarea (blur)
-        textarea.addEventListener("blur", guardarCambios);
-
-        // Guardar al cambiar checkbox
+        // Guardar al marcar checkbox
         checkbox.addEventListener("change", guardarCambios);
+
+        // Guardar al enviar anotación manualmente
+        textarea.addEventListener("blur", guardarCambios);
       });
     })
     .catch(err => console.error(err))
