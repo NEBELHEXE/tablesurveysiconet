@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   overlay.style.display = "flex";
 
-  fetch("https://script.google.com/macros/s/AKfycbwcGMthk-uqMPg_DttrEae8LBSxgZbHCp_zgAFO6nXTJSwCfPJ4z1M2GzA66dUWyno8/exec")
+  fetch("https://script.google.com/macros/s/AKfycbyV9t1_pxV0AMLyiulpNdUxUhTDPLSK5zbGfMZf5RtByIfVXEWYhVy9rR5zHum2Zz7N/exec")
     .then(res => res.json())
     .then(tickets => {
       tickets.forEach(ticket => {
@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </td>
           <td>
             <textarea class="comment-box" placeholder="Anotaciones...">${ticket.Anotaciones || ""}</textarea>
+            <div class="sending-feedback" style="display:none; font-size:0.85rem; color:#555; margin-top:3px;">Enviando Anotaciones...</div>
           </td>
         `;
         tableBody.appendChild(tr);
@@ -36,10 +37,12 @@ document.addEventListener("DOMContentLoaded", () => {
         // Referencias a los elementos
         const checkbox = tr.querySelector(".completed-checkbox");
         const textarea = tr.querySelector(".comment-box");
+        const feedback = tr.querySelector(".sending-feedback");
 
         // Función para enviar actualización a la Web App
         const guardarCambios = () => {
-          fetch("https://script.google.com/macros/s/AKfycbwcGMthk-uqMPg_DttrEae8LBSxgZbHCp_zgAFO6nXTJSwCfPJ4z1M2GzA66dUWyno8/exec", {
+          feedback.style.display = "block"; // Mostrar animación/feedback
+          fetch("https://script.google.com/macros/s/AKfycbyV9t1_pxV0AMLyiulpNdUxUhTDPLSK5zbGfMZf5RtByIfVXEWYhVy9rR5zHum2Zz7N/exec", {
             method: "POST",
             body: new URLSearchParams({
               action: "update",
@@ -47,11 +50,24 @@ document.addEventListener("DOMContentLoaded", () => {
               realizado: checkbox.checked,
               anotaciones: textarea.value
             })
-          }).catch(err => console.error("Error guardando ticket:", err));
+          })
+          .then(res => res.json())
+          .then(() => {
+            setTimeout(() => {
+              feedback.style.display = "none"; // Ocultar feedback después de 1s
+            }, 1000);
+          })
+          .catch(err => {
+            console.error("Error guardando ticket:", err);
+            feedback.style.display = "none";
+          });
         };
 
         // Guardar al marcar checkbox
         checkbox.addEventListener("change", guardarCambios);
+
+        // Guardar al salir del textarea (blur)
+        textarea.addEventListener("blur", guardarCambios);
 
         // Guardar automáticamente al escribir en textarea (debounce)
         let timeout;
