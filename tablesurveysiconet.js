@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   overlay.style.display = "flex";
 
-  fetch("https://script.google.com/macros/s/AKfycbzOKaPkUiCo3lBcazjac5GnfTAeVn8m-y65sl8_BV6K5mkRLt33nhY11KskTZVXbNSm/exec")
+  fetch("https://script.google.com/macros/s/AKfycbweQJOx0bh5whh0dJmjBoHyO8FDSPQfO-6q_a-S7soh85pT9o5_oMuZ7kLJb7faqYsx/exec")
     .then(res => res.json())
     .then(tickets => {
       tickets.forEach(ticket => {
