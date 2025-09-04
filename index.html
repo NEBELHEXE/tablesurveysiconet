@@ -90,21 +90,38 @@
     </div>
 
     <!-- Tabla de tickets -->
-    <table id="tickets-table">
-      <thead>
-        <tr>
-          <th>Empresa</th>
-          <th>Fecha</th>
-          <th>ID</th>
-          <th>Urgencia</th>
-          <th>Descripción</th>
-          <th>Estado</th>
-          <th>Realizado</th>
-          <th>Comentarios</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+   <table id="tickets-table">
+  <thead>
+    <tr>
+      <th>Empresa</th>
+      <th>Fecha</th>
+      <th>ID</th>
+      <th>Urgencia</th>
+      <th>Descripción</th>
+      <th class="estado-cell">Estado</th>
+      <th>Comentarios</th>
+      <th>Realizado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Ejemplo S.A.</td>
+      <td>2025-09-04</td>
+      <td>12345</td>
+      <td>Alta</td>
+      <td>Problema con ERP</td>
+      <td class="estado-cell">🫡</td>
+      <td>
+        <textarea class="comment-box" placeholder="Escribe un comentario..."></textarea>
+      </td>
+      <td>
+        <input type="checkbox" class="completed-checkbox">
+      </td>
+    </tr>
+    <!-- Más filas se agregan dinámicamente con JS -->
+  </tbody>
+</table>
+
   </main>
 
   <footer class="footer">
@@ -112,5 +129,6 @@
   </footer>
 </body>
 </html>
+
 
 
