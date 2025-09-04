@@ -85,7 +85,6 @@ h1 {
 /* --- Inputs y textarea --- */
 input[type="text"], input[type="email"], textarea, select {
     padding: clamp(0.5rem, 1vw, 0.8rem);
-    width: clamp(80%, 90vw, 25rem);
     font-size: var(--font-size-base);
     border-radius: var(--border-radius);
     border: 0.1rem solid #000099;
@@ -152,7 +151,6 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
 /* --- Tabla --- */
 #tickets-table {
     width: 80%;
-    max-width: 1200px;
     margin: 2rem auto;
     border-collapse: collapse;
     border-radius: var(--border-radius);
@@ -161,64 +159,69 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
 }
 
 #tickets-table th, #tickets-table td {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 0.5rem;
     text-align: left;
     border-bottom: 0.1rem solid rgba(0,0,0,0.1);
 }
 
+/* --- Ancho de columnas --- */
+#tickets-table th:nth-child(6), #tickets-table td:nth-child(6) { /* Estado */
+    width: 6%;
+    text-align: center;
+}
+#tickets-table th:nth-child(7), #tickets-table td:nth-child(7) { /* Realizado */
+    width: 6%;
+    text-align: center;
+}
+#tickets-table th:nth-child(8), #tickets-table td:nth-child(8) { /* Anotaciones */
+    width: auto;
+}
+
+/* --- Encabezado y hover --- */
 #tickets-table thead {
     background-color: var(--bg-table-alt1);
     color: var(--color-text);
 }
-
 #tickets-table tbody tr:nth-child(odd) {
     background-color: var(--bg-table-alt1);
 }
-
 #tickets-table tbody tr:nth-child(even) {
     background-color: var(--bg-table-alt2);
 }
-
 #tickets-table tbody tr:hover {
     background-color: var(--bg-hover);
     color: white;
     cursor: pointer;
 }
 
-/* --- Columna Anotaciones --- */
-#tickets-table td textarea.comment-box {
+/* --- Columna Anotaciones y textarea --- */
+#tickets-table td textarea {
     width: 100%;
-    min-width: 250px;
-    max-width: 100%;
+    max-width: 600px;
+    min-height: 3rem;
     padding: 0.5rem;
     font-size: var(--font-size-base);
     border-radius: var(--border-radius);
     border: 0.1rem solid #000099;
     resize: vertical;
-    box-shadow: var(--shadow-base);
 }
 
-/* --- Checkbox estilo --- */
+/* --- Checkbox columna Realizado --- */
 #tickets-table td input[type="checkbox"] {
     display: block;
     margin: 0 auto;
-    transform: scale(1.2);
+    transform: scale(1);
     cursor: pointer;
 }
 
 /* --- Responsive --- */
-@media (max-width: 600px) {
-    #tickets-table th, #tickets-table td {
-        font-size: 0.9rem;
-        padding: 0.5rem;
-    }
-
+@media (max-width: 900px) {
     #tickets-table {
         width: 95%;
     }
 
-    #tickets-table td textarea.comment-box {
-        width: 100%;
+    input[type="text"], textarea, select, button, #exportPdfBtn {
+        width: 95%;
     }
 }
 
