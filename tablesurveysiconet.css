@@ -150,8 +150,8 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
 
 /* --- Tabla --- */
 #tickets-table {
-    width: 80%; /* ocupa el 80% del ancho de pantalla */
-    max-width: 1200px; /* ancho máximo opcional */
+    width: 80%;
+    max-width: 1200px;
     margin: 2rem auto;
     border-collapse: collapse;
     border-radius: var(--border-radius);
@@ -166,15 +166,15 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
 }
 
 /* --- Ancho de columnas --- */
-#tickets-table th:nth-child(6), #tickets-table td:nth-child(6) { /* Estado */
+#tickets-table th:nth-child(6), #tickets-table td:nth-child(6) { 
     width: 6%;
     text-align: center;
 }
-#tickets-table th:nth-child(7), #tickets-table td:nth-child(7) { /* Realizado */
+#tickets-table th:nth-child(7), #tickets-table td:nth-child(7) { 
     width: 6%;
     text-align: center;
 }
-#tickets-table th:nth-child(8), #tickets-table td:nth-child(8) { /* Anotaciones */
+#tickets-table th:nth-child(8), #tickets-table td:nth-child(8) { 
     width: auto;
 }
 
@@ -205,17 +205,17 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
     border-radius: var(--border-radius);
     border: 0.1rem solid #000099;
     resize: vertical;
+    box-sizing: border-box;
 }
 
 #tickets-table td textarea.comment-box {
     width: 100%;
-    min-height: 3rem; /* más grande visualmente */
+    min-height: 3rem;
     resize: vertical;
     font-size: var(--font-size-base);
     padding: 0.5rem;
     border-radius: var(--border-radius);
     border: 0.1rem solid #000099;
-    box-sizing: border-box;
 }
 
 /* --- Checkbox columna Realizado --- */
@@ -243,7 +243,7 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
     font-size: 0.9rem;
 }
 
-/* Feedback de envío de anotaciones */
+/* --- Feedback de envío de anotaciones --- */
 .sending-feedback {
     display: none;
     font-size: 0.85rem;
@@ -251,19 +251,13 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
     margin-top: 3px;
     opacity: 0;
     transition: opacity 0.3s ease;
-}
-
-/* Cuando se muestra */
-.sending-feedback.show {
-    display: block;
-    opacity: 1;
-}
-
-/* Opcional: un fondo claro y redondeado */
-.sending-feedback {
     background-color: #f0f0f0;
     padding: 2px 6px;
     border-radius: 4px;
     font-style: italic;
 }
 
+.sending-feedback.show {
+    display: block;
+    opacity: 1;
+}
