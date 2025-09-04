@@ -3,52 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tickets Siconet</title>
-  <link rel="stylesheet" href="tablesurveysiconet.css">
-  <link rel="icon" href="https://th.bing.com/th/id/ODF.phOIinVjOrFg2calqOrstg?w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2">
-
+  <title>Tickets - Siconet</title>
+  <link rel="stylesheet" href="styles.css">
   <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('loading-overlay');
-    const tableBody = document.querySelector('#tickets-table tbody');
+    window.addEventListener('DOMContentLoaded', () => {
+      const overlay = document.getElementById('loading-overlay');
+      const tableBody = document.querySelector('#tickets-table tbody');
 
-    overlay.style.display = 'flex'; // mostrar overlay
+      overlay.style.display = 'flex'; // mostrar overlay
 
-    fetch('https://script.google.com/macros/s/AKfycbwFFlLqmW37g7hPORW5-9bTDVkLWqLOZEasb6oYopbed_eTZOFwdjuZxJX7Gnc2HpjS/exec') // <--- URL de WebApp
-      .then(res => res.json())
-      .then(data => {
-        const hoy = new Date();
-        data.forEach(ticket => {
-          const fechaTicket = new Date(ticket.Fecha);
-          const diffDias = Math.floor((hoy - fechaTicket) / (1000 * 60 * 60 * 24));
+      fetch('https://script.google.com/macros/s/TU-WEBAPP-ID/exec')
+        .then(res => res.json())
+        .then(data => {
+          const hoy = new Date();
 
-          // Determinar emoji según días
-          let estado = '🫡';
-          if (diffDias >= 0 && diffDias <= 1) estado = '🫡';
-          else if (diffDias <= 3) estado = '😐';
-          else if (diffDias <= 7) estado = '☹️';
-          else estado = '💀';
+          data.forEach(ticket => {
+            // Calcular días desde la fecha
+            const fechaTicket = new Date(ticket.Fecha);
+            const diffDias = Math.floor((hoy - fechaTicket) / (1000 * 60 * 60 * 24));
 
-          const tr = document.createElement('tr');
+            // Emoji de estado
+            let estado = '🫡';
+            if (diffDias >= 0 && diffDias <= 1) estado = '🫡';
+            else if (diffDias <= 3) estado = '😐';
+            else if (diffDias <= 7) estado = '☹️';
+            else estado = '💀';
 
-  tr.innerHTML = `
-  <td>${ticket.Empresa}</td>
-  <td>${ticket.Fecha}</td>
-  <td>${ticket.ID}</td>
-  <td>${ticket.Urgencia}</td>
-  <td>${ticket.Descripcion}</td>
-  <td>${estado}</td>
-  <td><textarea placeholder="Escribe un comentario..." rows="2"></textarea></td>
-  <td><input type="checkbox"></td>
-`;
-tableBody.appendChild(tr);
+            // Crear fila
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${ticket.Empresa}</td>
+              <td>${ticket.Fecha}</td>
+              <td>${ticket.ID}</td>
+              <td>${ticket.Urgencia}</td>
+              <td>${ticket.Descripcion}</td>
+              <td>${estado}</td>
+              <td>
+                <input type="checkbox" ${ticket.Realizado === true ? 'checked' : ''}>
+              </td>
+              <td>
+                <textarea rows="2" placeholder="Escribe un comentario...">${ticket.Comentarios || ""}</textarea>
+              </td>
+            `;
+
+            // Checkbox + guardado de comentarios
+            const checkbox = tr.querySelector('input[type="checkbox"]');
+            const textarea = tr.querySelector('textarea');
+
+            checkbox.addEventListener('change', () => {
+              fetch('https://script.google.com/macros/s/AKfycbwt6PKRC5WxjF-ZMcZdYx2bWWIRUGb1mr8fehAAB3Y0lQjMobpp0JrukqaChttBxa4w/exec', {
+                method: 'POST',
+                body: new URLSearchParams({
+                  action: "update",
+                  id: ticket.ID,
+                  realizado: checkbox.checked,
+                  comentarios: textarea.value
+                })
+              })
+              .then(res => res.json())
+              .then(res => console.log("Actualizado:", res))
+              .catch(err => console.error(err));
+            });
+
+            tableBody.appendChild(tr);
+          });
+        })
+        .catch(err => console.error(err))
+        .finally(() => {
+          overlay.style.display = 'none'; // ocultar overlay
         });
-      })
-      .catch(err => console.error(err))
-      .finally(() => {
-        overlay.style.display = 'none'; // ocultar overlay
-      });
-  });
+    });
   </script>
 </head>
 <body>
@@ -65,37 +89,26 @@ tableBody.appendChild(tr);
       <div>Cargando datos, por favor espera...</div>
     </div>
 
-   <!-- Tabla de tickets -->
-<table id="tickets-table">
-  <thead>
-    <tr>
-      <th>Empresa</th>
-      <th>Fecha</th>
-      <th>ID</th>
-      <th>Urgencia</th>
-      <th>Descripción</th>
-      <th>Estado</th>
-      <th>Comentarios</th>
-      <th>Realizado</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-    
+    <!-- Tabla de tickets -->
+    <table id="tickets-table">
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th>Fecha</th>
+          <th>ID</th>
+          <th>Urgencia</th>
+          <th>Descripción</th>
+          <th>Estado</th>
+          <th>Realizado</th>
+          <th>Comentarios</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </main>
-</body>
 
   <footer class="footer">
     <p>© 2025 Tickets - Siconet Sistema Administrativo</p>
-</footer>
+  </footer>
+</body>
 </html>
-
-
-
-
-
-
-
-
-
-
