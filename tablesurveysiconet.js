@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   overlay.style.display = "flex";
 
-  fetch("https://script.google.com/macros/s/AKfycbwcGMthk-uqMPg_DttrEae8LBSxgZbHCp_zgAFO6nXTJSwCfPJ4z1M2GzA66dUWyno8/exec")
+  fetch("https://script.google.com/macros/s/AKfycbyV9t1_pxV0AMLyiulpNdUxUhTDPLSK5zbGfMZf5RtByIfVXEWYhVy9rR5zHum2Zz7N/exec")
     .then(res => res.json())
     .then(tickets => {
       tickets.forEach(ticket => {
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Función para enviar actualización a la Web App
         const guardarCambios = () => {
           feedback.style.opacity = 1; // mostrar feedback
-          fetch("https://script.google.com/macros/s/AKfycbwcGMthk-uqMPg_DttrEae8LBSxgZbHCp_zgAFO6nXTJSwCfPJ4z1M2GzA66dUWyno8/exec", {
+          fetch("https://script.google.com/macros/s/AKfycbyV9t1_pxV0AMLyiulpNdUxUhTDPLSK5zbGfMZf5RtByIfVXEWYhVy9rR5zHum2Zz7N/exec", {
             method: "POST",
             body: new URLSearchParams({
               action: "update",
