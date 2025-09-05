@@ -39,6 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const textarea = tr.querySelector(".comment-box");
         const feedback = tr.querySelector(".sending-feedback");
 
+        // Inicializar textarea vacío
+        textarea.value = "";
+
         // Función para enviar actualización a la Web App
         const guardarCambios = () => {
           const anotacionTexto = textarea.value.trim();
