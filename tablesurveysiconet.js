@@ -28,21 +28,23 @@ document.addEventListener("DOMContentLoaded", () => {
             <input type="checkbox" class="completed-checkbox" ${ticket.Realizado ? "checked" : ""}>
           </td>
           <td>
-            <textarea class="comment-box" placeholder="Anotaciones...">${ticket.Anotaciones || ""}</textarea>
+            <textarea class="comment-box" placeholder="Anotaciones..."></textarea>
             <div class="sending-feedback">Enviando Anotaciones...</div>
           </td>
         `;
         tableBody.appendChild(tr);
 
+        // Referencias a los elementos
         const checkbox = tr.querySelector(".completed-checkbox");
         const textarea = tr.querySelector(".comment-box");
         const feedback = tr.querySelector(".sending-feedback");
 
-        // Función para enviar actualización
+        // Función para enviar actualización a la Web App
         const guardarCambios = () => {
-          if (!textarea.value.trim()) return; // No enviar si está vacío
+          const anotacionTexto = textarea.value.trim();
+          if (!anotacionTexto && !checkbox.checked) return; // nada que enviar
 
-          feedback.classList.add("show"); // Mostrar animación
+          feedback.classList.add("show"); // mostrar animación/feedback
 
           fetch("https://script.google.com/macros/s/AKfycbyV9t1_pxV0AMLyiulpNdUxUhTDPLSK5zbGfMZf5RtByIfVXEWYhVy9rR5zHum2Zz7N/exec", {
             method: "POST",
@@ -50,14 +52,15 @@ document.addEventListener("DOMContentLoaded", () => {
               action: "update",
               id: ticket.ID,
               realizado: checkbox.checked,
-              anotaciones: textarea.value
+              anotaciones: anotacionTexto
             })
           })
           .then(res => res.json())
           .then(() => {
+            // Feedback visible 1s y limpiar textarea
             setTimeout(() => {
-              feedback.classList.remove("show"); // Ocultar animación
-              textarea.value = ""; // Vaciar textarea
+              feedback.classList.remove("show");
+              textarea.value = "";
             }, 1000);
           })
           .catch(err => {
@@ -69,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Guardar al marcar checkbox
         checkbox.addEventListener("change", guardarCambios);
 
-        // Guardar al enviar anotación manualmente
+        // Guardar al salir del textarea
         textarea.addEventListener("blur", guardarCambios);
       });
     })
