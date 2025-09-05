@@ -264,16 +264,16 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
 
 /* Feedback de envío de anotaciones */
 .sending-feedback {
-    display: none;
+    display: none;              /* oculto por defecto */
     font-size: 0.85rem;
     color: #555;
     margin-top: 3px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    background-color: #f0f0f0;
     padding: 2px 6px;
     border-radius: 4px;
     font-style: italic;
+    background-color: #f0f0f0;
+    opacity: 0;                 /* para animación */
+    transition: opacity 0.3s ease;
 }
 
 /* Cuando se muestra */
@@ -287,3 +287,4 @@ button:hover, input[type="submit"]:hover, #exportPdfBtn:hover {
     font-weight: 500;
     margin-bottom: 5px;
 }
+
