@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   overlay.style.display = "flex";
 
-  fetch("https://script.google.com/macros/s/AKfycbyV9t1_pxV0AMLyiulpNdUxUhTDPLSK5zbGfMZf5RtByIfVXEWYhVy9rR5zHum2Zz7N/exec")
+  fetch("https://script.google.com/macros/s/AKfycbxBMzRtkIyZXca60sA9qiDnU3ZLqTtdFLtkM6MIlLp-M5CygegBf6nrZ-w9zxFZe21B/exec")
     .then(res => res.json())
     .then(tickets => {
       tickets.forEach(ticket => {
@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           feedback.classList.add("show"); // mostrar animación/feedback
 
-          fetch("https://script.google.com/macros/s/AKfycbyV9t1_pxV0AMLyiulpNdUxUhTDPLSK5zbGfMZf5RtByIfVXEWYhVy9rR5zHum2Zz7N/exec", {
+          fetch("https://script.google.com/macros/s/AKfycbxBMzRtkIyZXca60sA9qiDnU3ZLqTtdFLtkM6MIlLp-M5CygegBf6nrZ-w9zxFZe21B/exec", {
             method: "POST",
             body: new URLSearchParams({
               action: "update",
